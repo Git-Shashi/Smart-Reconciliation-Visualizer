@@ -62,7 +62,7 @@ export function ReconciliationChart({ summary }: ReconciliationChartProps) {
                 paddingAngle={2}
                 dataKey="value"
                 label={({ name, percent }) =>
-                  `${name}: ${(percent * 100).toFixed(0)}%`
+                  `${name}: ${((percent ?? 0) * 100).toFixed(0)}%`
                 }
                 labelLine={false}
               >
@@ -71,8 +71,8 @@ export function ReconciliationChart({ summary }: ReconciliationChartProps) {
                 ))}
               </Pie>
               <Tooltip
-                formatter={(value: number) => [
-                  value.toLocaleString("en-IN"),
+                formatter={(value) => [
+                  (value as number).toLocaleString("en-IN"),
                   "Records",
                 ]}
               />
