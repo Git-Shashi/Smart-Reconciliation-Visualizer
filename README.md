@@ -1,36 +1,162 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Smart Reconciliation Visualizer
 
-## Getting Started
+An interactive dashboard that helps users reconcile two financial datasets (e.g., Purchase Register vs Sales Register) and visually identify matches, mismatches, and missing entries.
 
-First, run the development server:
+![Smart Reconciliation Visualizer](https://img.shields.io/badge/Next.js-14-black?style=flat-square&logo=next.js)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=flat-square&logo=typescript)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-38B2AC?style=flat-square&logo=tailwind-css)
+
+## 🚀 Live Demo
+
+**[View Live Demo](https://smart-reconciliation-visualizer.vercel.app)** *(Update after deployment)*
+
+## ✨ Features
+
+- **📤 Dual CSV Upload**: Drag-and-drop file upload for Purchase Register and Sales Register
+- **🔍 Smart Matching**: Automatically matches records by Invoice Number + Date
+- **📊 Visual Dashboard**: Summary cards, pie charts, and detailed data tables
+- **🎯 Discrepancy Detection**: Identifies mismatches in amounts, GSTIN, tax values
+- **🔎 Advanced Filtering**: Search by Invoice No, Party Name, GSTIN; filter by status and amount range
+- **📥 Export Results**: Download reconciliation report as CSV
+- **📱 Responsive Design**: Works on desktop and mobile devices
+
+## 🛠️ Tech Stack
+
+| Category | Technology |
+|----------|------------|
+| Framework | Next.js 14 (App Router) |
+| Language | TypeScript |
+| Styling | Tailwind CSS |
+| UI Components | Custom shadcn/ui-style components |
+| Data Table | @tanstack/react-table |
+| Charts | Recharts |
+| CSV Parsing | PapaParse |
+| Icons | Lucide React |
+
+## 🏃 Getting Started
+
+### Prerequisites
+
+- Node.js 18+ 
+- npm or yarn
+
+### Installation
 
 ```bash
+# Clone the repository
+git clone https://github.com/Git-Shashi/Smart-Reconciliation-Visualizer.git
+
+# Navigate to project directory
+cd smart-reconciliation-visualizer
+
+# Install dependencies
+npm install
+
+# Start development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Build for Production
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm start
+```
 
-## Learn More
+## 📁 Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+├── app/
+│   ├── page.tsx          # Main application page
+│   ├── layout.tsx        # Root layout
+│   └── globals.css       # Global styles
+├── components/
+│   ├── ui/               # Reusable UI components (Button, Card, Table, etc.)
+│   ├── FileUpload.tsx    # CSV file upload component
+│   ├── FilterPanel.tsx   # Search and filter controls
+│   ├── ResultsTable.tsx  # Data table with expandable rows
+│   ├── SummaryCards.tsx  # Statistics summary cards
+│   └── ReconciliationChart.tsx  # Pie chart visualization
+├── lib/
+│   ├── reconciliation.ts # Core reconciliation logic
+│   └── utils.ts          # Utility functions
+├── types/
+│   └── reconciliation.ts # TypeScript type definitions
+└── public/
+    └── samples/          # Sample CSV files for testing
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🧠 Approach & Technical Decisions
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 1. Matching Logic
+- **Primary Key**: Invoice Number + Invoice Date combination
+- **Tolerance**: ₹1 variance allowed for rounding differences
+- **Date Formats**: Supports both YYYY-MM-DD and DD-MM-YYYY formats
+- **Column Detection**: Auto-detects column names from common GST formats (GSTR-1, GSTR-2A)
 
-## Deploy on Vercel
+### 2. Reconciliation Categories
+| Status | Description |
+|--------|-------------|
+| ✅ Matched | Records exist in both datasets with identical values |
+| ❌ Mismatched | Records found but values differ (amount, tax, GSTIN) |
+| ⚠️ Missing in Purchase | Record exists in Sales but not in Purchase |
+| ⚠️ Missing in Sales | Record exists in Purchase but not in Sales |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 3. Why Next.js + TypeScript?
+- **Type Safety**: Prevents runtime errors, better IDE support
+- **Performance**: Server-side rendering, automatic code splitting
+- **Modern React**: App Router with React Server Components support
+- **Easy Deployment**: Seamless Vercel integration
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 4. Why Client-Side Processing?
+- **Privacy**: Financial data never leaves the user's browser
+- **Speed**: No network latency for reconciliation
+- **Simplicity**: No backend required, reduces deployment complexity
+
+## 📋 Assumptions
+
+1. **CSV Format**: Input files must be valid CSV with headers in the first row
+2. **Required Columns**: Must have at least an "Invoice No" column (or similar)
+3. **Numeric Values**: Amount columns should be numeric (commas and ₹ symbol are handled)
+4. **Character Encoding**: Files should be UTF-8 encoded
+5. **Data Size**: Designed for datasets up to 10,000 records (browser memory limit)
+
+## 🧪 Sample Data
+
+The application includes sample CSV files for testing:
+
+- `sample-purchase-register.csv` - 15 purchase records
+- `sample-sales-register.csv` - 15 sales records (with intentional discrepancies)
+
+**Test Scenarios Covered:**
+- Perfect matches (INV-2024-001, INV-2024-002)
+- Amount mismatches (INV-2024-003, INV-2024-008)
+- Missing in Sales (INV-2024-012)
+- Missing in Purchase (INV-2024-016)
+- Minor name variations (HCL Technologies vs HCL Technologies Ltd)
+
+## 📈 Future Enhancements
+
+- [ ] Excel file support (.xlsx)
+- [ ] Custom column mapping UI
+- [ ] Multiple reconciliation rule sets
+- [ ] Historical comparison tracking
+- [ ] Bulk export with annotations
+- [ ] Dark mode support
+
+## 👤 Author
+
+**Shashi** - Full Stack Developer Intern Applicant
+
+- GitHub: [@Git-Shashi](https://github.com/Git-Shashi)
+
+## 📄 License
+
+This project is created as part of a technical assessment for WFYI Technology.
+
+---
+
+Built with ❤️ for WFYI Technology Full Stack Development Internship Assessment
